@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script>
+
+		var funcMaps = {
+
+		};
+
+		var Promise = function() {
+
+		};
+
+		Promise.promisify = function(func, thisObj) {
+			var result = function() {
+				var args = Array.prototype.slice.call(arguments);	
+				var callback = function() {
+					funcMaps['fullfilled'].apply(thisObj, arguments);
+				}
+				args.push(callback);
+				func.apply(thisObj, args);
+				return {
+					then: function() {
+						funcMaps['fullfilled'] = arguments[0];
+					}
+				}
+			}
+			return result;
+		}
+
+		var async = function(text, cb) {
+			setTimeout(function(){
+				cb(text);
+			}, 2e3);
+		};
+
+		var promiseAsync = Promise.promisify(async);
+		promiseAsync('hello').then(function(text) {
+			console.log(text);
+		});
+	</script>
+</body>
+</html>
